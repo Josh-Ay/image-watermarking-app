@@ -95,13 +95,9 @@ class App:
                                                                                          "would like to put on the "
                                                                                          "image")
             if watermark_text is not None:
-                font_size = simpledialog.askinteger(title="Enter font size",
-                                                    prompt="Please enter the font size (e.g 1,6,16) "
-                                                           "you would like: ")
-                image_file_extension = pathlib.Path(self.filepath).suffix
-                if font_size is not None:
-                    image_font = ImageFont.truetype("arial.ttf", font_size)
-                    text_width, text_height = draw.textsize(watermark_text, image_font)
+
+                def put_selected_font_and_load_image(selected_font):
+                    text_width, text_height = draw.textsize(watermark_text, selected_font)
                     x, y = image_width - text_width, image_height - text_height
                     draw.text((x, y), watermark_text, font=image_font)
 
@@ -109,15 +105,17 @@ class App:
                     self.watermark_img = ImageTk.PhotoImage(Image.open("watermark.jpg"))
                     self.load_image(self.watermark_img)  # loading the watermarked image into the canvas
 
+                font_size = simpledialog.askinteger(title="Enter font size", prompt="Please enter the font size "
+                                                                                    "(e.g 1,6,16) you would like: ")
+                image_file_extension = pathlib.Path(self.filepath).suffix
+
+                if font_size is not None:
+                    image_font = ImageFont.truetype("arial.ttf", font_size)
+                    put_selected_font_and_load_image(image_font)
+
                 else:
                     image_font = ImageFont.truetype("arial.ttf", 16)
-                    text_width, text_height = draw.textsize(watermark_text, image_font)
-                    x, y = image_width - text_width, image_height - text_height
-                    draw.text((x, y), watermark_text, font=image_font)
-
-                    image_new.save(f"watermark{image_file_extension}")  # saving the new image
-                    self.watermark_img = ImageTk.PhotoImage(Image.open("watermark.jpg"))
-                    self.load_image(self.watermark_img)
+                    put_selected_font_and_load_image(image_font)
 
     def remove_loaded_image(self):
         """ To remove the loaded image from the canvas """
